@@ -1,4 +1,3 @@
-//https://github.com/PedroHurtado/javahmmin1
 package com.example.demo.Core;
 
 import java.util.UUID;
