@@ -13,6 +13,7 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Configuration
@@ -30,8 +31,7 @@ public class AddIngredient {
         }        
         @PostMapping("/ingredients")
         @ResponseStatus(HttpStatus.CREATED)
-        public Mono<Response> handler(Mono<Request> request){
-
+        public Mono<Response> handler(@RequestBody() Mono<Request> request){                        
             return useCase.handler(request);
         }
     }
@@ -47,7 +47,7 @@ public class AddIngredient {
         }
         @Override
         public Mono<Response> handler(Mono<Request> request) {            
-            return request.map(i->{                                
+            return request.map(i->{                                                
                 Ingredient ingredient = Ingredient.create(i.name(), i.price());
                 this.repository.add(ingredient); 
                 return new Response(
