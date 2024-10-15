@@ -29,3 +29,24 @@
     Optional<T>- No tiene valor
         404
         200
+
+3. Crear una pizza
+    Request->Dto
+        Flux<IngredientId>
+    (name,description,url,Flux<UUID> ingedients)
+    Mono<Request>
+
+    UseCase->Repository Ingredient
+    Repository Pizza
+
+    .map(p->{
+        creo la pizza
+        flatmap(ingredies)
+            Repository.get->OK
+            addIngredient(ingredient)
+    })
+
+    .map->response
+
+    Flux.fromIterable()
+        .flatmap(dto->ingrediente)

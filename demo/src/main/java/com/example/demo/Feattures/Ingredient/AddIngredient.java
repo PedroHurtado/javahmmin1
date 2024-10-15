@@ -31,7 +31,7 @@ public class AddIngredient {
         }        
         @PostMapping("/ingredients")
         @ResponseStatus(HttpStatus.CREATED)
-        public Mono<Response> handler(@RequestBody() Mono<Request> request){                        
+        public Mono<Response> handler(@RequestBody() Mono<Request> request){                                    
             return useCase.handler(request);
         }
     }
@@ -55,6 +55,7 @@ public class AddIngredient {
                     ingredient.getName(), 
                     ingredient.getPrice());               
             });
+            
         }
 
     }
