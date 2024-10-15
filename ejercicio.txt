@@ -1,0 +1,15 @@
+1. Crear un ingrediente
+
+    1. Controlador
+    2. UseCase
+    3. Repository->InMemry->static List<ingredient>
+
+    public record RequestIngredient(String nombre, Double price) {
+    }
+
+    Mono<RequestIngredient>
+
+    public record ResponseIngredient(UUID id,String nombre, Double price) {
+    }
+
+    Mono<ResponseIngredient> 201

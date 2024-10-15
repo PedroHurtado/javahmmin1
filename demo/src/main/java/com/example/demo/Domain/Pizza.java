@@ -40,12 +40,12 @@ public class Pizza extends EntityBase {
     public void removeIngredient(Ingredient ingredient){
         ingredients.remove(ingredient);
     }
-    public void Update(String name,String description,String url){
+    public void update(String name,String description,String url){
         this.name = name;
         this.description = description;
         this.url=url;
     }
-    public static Pizza Create(String name,String description,String url){
+    public static Pizza create(String name,String description,String url){
         return new Pizza(UUID.randomUUID(), name, description, url);
     }
 }

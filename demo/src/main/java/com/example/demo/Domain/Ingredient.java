@@ -15,11 +15,11 @@ public class Ingredient extends EntityBase {
         this.name = name;
         this.price = price;
     }
-    public void Update(String name, Double price){
+    public void update(String name, Double price){
         this.name =name;
         this.price =price;
     }
-    public static Ingredient Create(String name, Double price){
+    public static Ingredient create(String name, Double price){
         return new Ingredient(UUID.randomUUID(),name,price);
     }
 
