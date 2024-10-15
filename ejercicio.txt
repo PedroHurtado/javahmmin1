@@ -13,3 +13,19 @@
     }
 
     Mono<ResponseIngredient> 201
+
+2. Get
+    Request id
+    Response id,name,price
+    Repository->UseCase->Controlador
+
+    Mono<Ingredient>->Mono<Response>
+
+    Mono.just()
+    Mono.map()
+
+    Ingredients.stream.filter(i=>i.id==id)
+
+    Optional<T>- No tiene valor
+        404
+        200
