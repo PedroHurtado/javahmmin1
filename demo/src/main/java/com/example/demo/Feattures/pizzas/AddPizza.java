@@ -29,6 +29,7 @@ public class AddPizza {
             String name,
             String description,
             String url,
+            //serializer
             Set<RequestIngredient> ingredients) {
     }
 
@@ -42,6 +43,7 @@ public class AddPizza {
             String description,
             String url,
             double price,
+            //deserializer
             Stream<ResponseIngredient> ingredients) {
     }
 
