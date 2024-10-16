@@ -1,7 +1,9 @@
 package com.example.demo.Domain;
 
-import reactor.core.publisher.Mono;
+//import reactor.core.publisher.Mono;
+
+//import reactor.core.publisher.Mono;
 
 public interface RepositoryPizza {
-    Mono<Pizza> add(Pizza entity);
+    void add(Pizza entity);
 }
