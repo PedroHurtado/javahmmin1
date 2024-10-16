@@ -30,7 +30,8 @@ public class AddPizza {
             Flux<RequestIngredient> ingredients) {
     }
 
-    public record ResponseIngredient() {
+    public record ResponseIngredient(UUID id, String name) {
+
     }
 
     public record Response(
@@ -38,8 +39,8 @@ public class AddPizza {
             String name,
             String description,
             String url,
-            double Price,
-            Set<Ingredient> ingredients) {
+            double price,
+            Flux<ResponseIngredient> ingredients) {
     }
 
     @RestController
@@ -87,19 +88,23 @@ public class AddPizza {
                 })
                 .doOnNext(i -> pizza.addIngredient(i))
                 .then(repository.add(pizza))              
-                .map(savedPizza -> {
+                .map(savedPizza -> {                        
                         return new Response(
                                     savedPizza.getId(),
                                     savedPizza.getName(),
                                     savedPizza.getDescription(),
                                     savedPizza.getUrl(),
                                     savedPizza.getPrice(),
-                                    savedPizza.getIngredients());
+                                    generateIngredient(savedPizza.getIngredients()));
                 });
 
             });
         }
 
+        public Flux<ResponseIngredient> generateIngredient(Set<Ingredient> ingredients){
+            return Flux.fromIterable(ingredients)
+                .map(i->new ResponseIngredient(i.getId(), i.getName()));
+        }
     }
 
 }
