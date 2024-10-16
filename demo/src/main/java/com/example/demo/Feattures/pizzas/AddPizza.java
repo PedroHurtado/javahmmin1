@@ -20,11 +20,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.Set;
 
 public class AddPizza {
+    
+    public record RequestIngredient(UUID id){}
+
     public record Request(
             String name,
             String description,
             String url,
-            Flux<UUID> ingredients) {
+            Flux<RequestIngredient> ingredients) {
     }
 
     public record ResponseIngredient() {
@@ -79,22 +82,19 @@ public class AddPizza {
                 Pizza pizza = Pizza.create(p.name(), p.description(), p.url());
 
                 return p.ingredients.flatMap(UUID -> {
-                    return this.respositoryIngredient.get(UUID)
+                    return this.respositoryIngredient.get(UUID.id())
                             .switchIfEmpty(Mono.error(new NotFoundException()));
                 })
                 .doOnNext(i -> pizza.addIngredient(i))
-                .then(Mono.defer(() -> {
-                            repository.add(pizza);
-                            return Mono.just(pizza);
-                }))
-                .flatMap(savedPizza -> {
-                        return Mono.just(new Response(
+                .then(repository.add(pizza))              
+                .map(savedPizza -> {
+                        return new Response(
                                     savedPizza.getId(),
                                     savedPizza.getName(),
                                     savedPizza.getDescription(),
                                     savedPizza.getUrl(),
                                     savedPizza.getPrice(),
-                                    savedPizza.getIngredients()));
+                                    savedPizza.getIngredients());
                 });
 
             });

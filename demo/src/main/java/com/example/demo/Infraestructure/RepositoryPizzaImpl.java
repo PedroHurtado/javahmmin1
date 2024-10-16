@@ -8,14 +8,17 @@ import java.util.ArrayList;
 import com.example.demo.Domain.Pizza;
 import com.example.demo.Domain.RepositoryPizza;
 
+import reactor.core.publisher.Mono;
+
 
 @Component
 public class RepositoryPizzaImpl implements RepositoryPizza {
 
     public static List<Pizza> pizzas = new ArrayList<>();
     @Override
-    public void add(Pizza entity) {
+    public Mono<Pizza> add(Pizza entity) {
         pizzas.add(entity);
+        return Mono.just(entity);
         
     }
     
