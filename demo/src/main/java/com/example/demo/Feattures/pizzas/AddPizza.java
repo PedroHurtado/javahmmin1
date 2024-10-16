@@ -1,6 +1,7 @@
 package com.example.demo.Feattures.pizzas;
 
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.*;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,12 +14,14 @@ import com.example.demo.Domain.RepositoryPizza;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Set;
-
+@Configuration
 public class AddPizza {
     
     public record RequestIngredient(UUID id){}
@@ -27,7 +30,7 @@ public class AddPizza {
             String name,
             String description,
             String url,
-            Flux<RequestIngredient> ingredients) {
+            Set<RequestIngredient> ingredients) {
     }
 
     public record ResponseIngredient(UUID id, String name) {
@@ -40,7 +43,7 @@ public class AddPizza {
             String description,
             String url,
             double price,
-            Flux<ResponseIngredient> ingredients) {
+            Stream<ResponseIngredient> ingredients) {
     }
 
     @RestController
@@ -81,8 +84,8 @@ public class AddPizza {
             return request.flatMap(p -> {
                 
                 Pizza pizza = Pizza.create(p.name(), p.description(), p.url());
-
-                return p.ingredients.flatMap(UUID -> {
+                Flux<RequestIngredient> requestIngredients = Flux.fromIterable(p.ingredients());
+                return requestIngredients.flatMap(UUID -> {
                     return this.respositoryIngredient.get(UUID.id())
                             .switchIfEmpty(Mono.error(new NotFoundException()));
                 })
@@ -101,9 +104,9 @@ public class AddPizza {
             });
         }
 
-        public Flux<ResponseIngredient> generateIngredient(Set<Ingredient> ingredients){
-            return Flux.fromIterable(ingredients)
-                .map(i->new ResponseIngredient(i.getId(), i.getName()));
+        public Stream<ResponseIngredient> generateIngredient(Set<Ingredient> ingredients){
+            return ingredients.stream().map(i->new ResponseIngredient(i.getId(), i.getName()));
+                
         }
     }
 

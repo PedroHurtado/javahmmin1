@@ -1,5 +1,6 @@
 package com.example.demo.Domain;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import java.util.UUID;
 
@@ -8,4 +9,5 @@ import org.springframework.stereotype.Component;
 public interface RepositoryIngredient {
    void add(Ingredient entity);  
    Mono<Ingredient> get(UUID id);
+   Flux<Ingredient> getAll();
 } 

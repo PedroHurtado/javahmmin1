@@ -3,6 +3,7 @@ package com.example.demo.Infraestructure;
 import com.example.demo.Domain.Ingredient;
 import com.example.demo.Domain.RepositoryIngredient;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -26,6 +27,10 @@ public class RepositoryIngredientImpl implements RepositoryIngredient{
         return Mono.empty();
        }
        return Mono.just(result.get());
+    }
+    @Override
+    public Flux<Ingredient> getAll() {
+        return Flux.fromIterable(ingredients);
     }
     
     
