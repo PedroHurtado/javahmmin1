@@ -52,3 +52,42 @@
         .flatmap(dto->ingrediente)
 
 4. Get All para ingredients
+    
+    Flux<> Correctamente
+
+org.springframework.core.codec.
+	CodecException: 
+Type definition error: [simple type, class
+
+
+Mono<Request>
+
+Request
+{
+   Flux<E>   //da un error de codec
+}
+
+Response{
+   Flux<E> //no da error pero no serializa correctamente
+}
+
+Debemos de sustituirlo es con 
+
+	un Set, List, etc.   en el request
+	Response->Stream
+
+
+5. Crear un metodo en un Controlador
+    que devuelva un mono
+
+    Mono->{
+        name:"Pedro"
+        Flux<String> saludo:"Hello World"
+    }
+
+
+    saludo:[H
+    e
+    l
+    l
+    o]

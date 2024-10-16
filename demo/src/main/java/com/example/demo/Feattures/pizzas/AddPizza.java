@@ -1,7 +1,7 @@
 package com.example.demo.Feattures.pizzas;
 
 import java.util.*;
-import java.util.stream.*;
+//import java.util.stream.*;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,7 +43,7 @@ public class AddPizza {
             String description,
             String url,
             double price,
-            Stream<ResponseIngredient> ingredients) {
+            List<ResponseIngredient> ingredients) {
     }
 
     @RestController
@@ -90,23 +90,25 @@ public class AddPizza {
                             .switchIfEmpty(Mono.error(new NotFoundException()));
                 })
                 .doOnNext(i -> pizza.addIngredient(i))
-                .then(repository.add(pizza))              
-                .map(savedPizza -> {                        
+                .then(repository.add(pizza)) 
+                .zipWith(
+                    generateIngredient(pizza.getIngredients()).collectList(),
+                    (savedPizza,ingredients)->{
                         return new Response(
                                     savedPizza.getId(),
                                     savedPizza.getName(),
                                     savedPizza.getDescription(),
                                     savedPizza.getUrl(),
                                     savedPizza.getPrice(),
-                                    generateIngredient(savedPizza.getIngredients()));
-                });
+                                    ingredients);
+                    });                                            
+                
 
             });
         }
 
-        public Stream<ResponseIngredient> generateIngredient(Set<Ingredient> ingredients){
-            return ingredients.stream().map(i->new ResponseIngredient(i.getId(), i.getName()));
-                
+        public Flux<ResponseIngredient> generateIngredient(Set<Ingredient> ingredients){
+            return Flux.fromIterable(ingredients).map(i->new ResponseIngredient(i.getId(), i.getName()));
         }
     }
 
