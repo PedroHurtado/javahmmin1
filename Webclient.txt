@@ -1,0 +1,44 @@
+WebClient client = WebClient.create("https://example.org");
+
+Mono<ResponseEntity<Person>> result = client.get()
+		.uri("/persons/{id}", id).accept(MediaType.APPLICATION_JSON)
+		.retrieve()
+		.toEntity(Person.class);
+
+WebClient client = WebClient.create("https://example.org");
+
+Mono<Person> result = client.get()
+		.uri("/persons/{id}", id).accept(MediaType.APPLICATION_JSON)
+		.retrieve()
+		.bodyToMono(Person.class);
+
+Flux<Quote> result = client.get()
+		.uri("/quotes").accept(MediaType.TEXT_EVENT_STREAM)
+		.retrieve()
+		.bodyToFlux(Quote.class);
+
+Mono<Person> result = client.get()
+		.uri("/persons/{id}", id).accept(MediaType.APPLICATION_JSON)
+		.retrieve()
+		.onStatus(HttpStatusCode::is4xxClientError, response -> ...)
+		.onStatus(HttpStatusCode::is5xxServerError, response -> ...)
+		.bodyToMono(Person.class);
+
+Mono<Person> entityMono = client.get()
+		.uri("/persons/1")
+		.accept(MediaType.APPLICATION_JSON)
+		.exchangeToMono(response -> {
+			if (response.statusCode().equals(HttpStatus.OK)) {
+				return response.bodyToMono(Person.class);
+			}
+			else {
+				// Turn to error
+				return response.createError();
+			}
+		});
+Mono<Void> result = client.post()
+		.uri("/persons/{id}", id)
+		.contentType(MediaType.APPLICATION_JSON)
+		.body(personMono, Person.class)
+		.retrieve()
+		.bodyToMono(Void.class);

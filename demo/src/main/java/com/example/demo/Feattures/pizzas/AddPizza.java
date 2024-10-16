@@ -64,8 +64,9 @@ public class AddPizza {
         private final RepositoryIngredient respositoryIngredient;
 
         public UneCaseImpl(
-                final RepositoryPizza repository,
-                final RepositoryIngredient respositoryIngredient) {
+            final RepositoryPizza repository,
+            final RepositoryIngredient respositoryIngredient
+        ) {
             this.repository = repository;
             this.respositoryIngredient = respositoryIngredient;
         }
@@ -75,7 +76,7 @@ public class AddPizza {
 
             return request.flatMap(p -> {
                 
-                Pizza pizza = Pizza.create(p.name(), p.description, p.url());
+                Pizza pizza = Pizza.create(p.name(), p.description(), p.url());
 
                 return p.ingredients.flatMap(UUID -> {
                     return this.respositoryIngredient.get(UUID)

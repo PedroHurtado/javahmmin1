@@ -1,0 +1,98 @@
+https://docs.spring.io/spring-framework/reference/web/webflux-functional.html
+
+
+public class PersonHandler {
+
+	private final PersonRepository repository;
+
+	public PersonHandler(PersonRepository repository) {
+		this.repository = repository;
+	}
+
+	public Mono<ServerResponse> listPeople(ServerRequest request) { 
+		Flux<Person> people = repository.allPeople();
+		return ok().contentType(APPLICATION_JSON).body(people, Person.class);
+	}
+
+	public Mono<ServerResponse> createPerson(ServerRequest request) { 
+		Mono<Person> person = request.bodyToMono(Person.class);
+		return ok().build(repository.savePerson(person));
+	}
+
+	public Mono<ServerResponse> getPerson(ServerRequest request) { 
+		int personId = Integer.valueOf(request.pathVariable("id"));
+		return repository.getPerson(personId)
+			.flatMap(person -> ok().contentType(APPLICATION_JSON).bodyValue(person))
+			.switchIfEmpty(ServerResponse.notFound().build());
+	}
+}
+
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.reactive.function.server.RouterFunction;
+import org.springframework.web.reactive.function.server.ServerResponse;
+import static org.springframework.web.reactive.function.server.RequestPredicates.*;
+import static org.springframework.web.reactive.function.server.RouterFunctions.route;
+
+@Configuration
+public class ProductRouter {
+
+    @Bean
+    public RouterFunction<ServerResponse> productRoutes(ProductHandler handler) {
+        return route(GET("/products"), handler::getAllProducts)
+                .andRoute(GET("/products/{id}"), handler::getProductById)
+                .andRoute(POST("/products"), handler::createProduct)
+                .andRoute(PUT("/products/{id}"), handler::updateProduct)
+                .andRoute(DELETE("/products/{id}"), handler::deleteProduct);
+    }
+}
+
+
+import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.server.ServerRequest;
+import org.springframework.web.reactive.function.server.ServerResponse;
+import reactor.core.publisher.Mono;
+import static org.springframework.web.reactive.function.server.ServerResponse.ok;
+import static org.springframework.web.reactive.function.server.ServerResponse.notFound;
+
+@Component
+public class ProductHandler {
+
+    private final ProductService productService;
+
+    public ProductHandler(ProductService productService) {
+        this.productService = productService;
+    }
+
+    public Mono<ServerResponse> getAllProducts(ServerRequest request) {
+        return ok().body(productService.getAllProducts(), Product.class);
+    }
+
+    public Mono<ServerResponse> getProductById(ServerRequest request) {
+        String id = request.pathVariable("id");
+        return productService.getProductById(id)
+                .flatMap(product -> ok().bodyValue(product))
+                .switchIfEmpty(notFound().build());
+    }
+
+    public Mono<ServerResponse> createProduct(ServerRequest request) {
+        return request.bodyToMono(Product.class)
+                .flatMap(productService::createProduct)
+                .flatMap(product -> ok().bodyValue(product));
+    }
+
+    public Mono<ServerResponse> updateProduct(ServerRequest request) {
+        String id = request.pathVariable("id");
+        return request.bodyToMono(Product.class)
+                .flatMap(product -> productService.updateProduct(id, product))
+                .flatMap(updatedProduct -> ok().bodyValue(updatedProduct))
+                .switchIfEmpty(notFound().build());
+    }
+
+    public Mono<ServerResponse> deleteProduct(ServerRequest request) {
+        String id = request.pathVariable("id");
+        return productService.deleteProduct(id)
+                .then(ok().build());
+    }
+}
