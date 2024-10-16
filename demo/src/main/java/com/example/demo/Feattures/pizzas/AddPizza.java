@@ -1,7 +1,7 @@
 package com.example.demo.Feattures.pizzas;
 
 import java.util.*;
-//import java.util.stream.*;
+import java.util.stream.*;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -14,13 +14,12 @@ import com.example.demo.Domain.RepositoryPizza;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-
-import java.util.Set;
+//import static org.springframework.http.MediaType.TEXT_EVENT_STREAM_VALUE;
+//import static org.springframework.http.MediaType.APPLICATION_NDJSON_VALUE;
 @Configuration
 public class AddPizza {
     
@@ -43,7 +42,7 @@ public class AddPizza {
             String description,
             String url,
             double price,
-            List<ResponseIngredient> ingredients) {
+            Stream<ResponseIngredient> ingredients) {
     }
 
     @RestController
@@ -54,7 +53,7 @@ public class AddPizza {
             this.useCase = useCase;
         }
 
-        @PostMapping("/pizzas")
+        @PostMapping(path="/pizzas")        
         public Mono<Response> postMethodName(@RequestBody Mono<Request> request) {
             return useCase.handle(request);
         }
@@ -91,24 +90,24 @@ public class AddPizza {
                 })
                 .doOnNext(i -> pizza.addIngredient(i))
                 .then(repository.add(pizza)) 
-                .zipWith(
-                    generateIngredient(pizza.getIngredients()).collectList(),
-                    (savedPizza,ingredients)->{
-                        return new Response(
-                                    savedPizza.getId(),
-                                    savedPizza.getName(),
-                                    savedPizza.getDescription(),
-                                    savedPizza.getUrl(),
-                                    savedPizza.getPrice(),
-                                    ingredients);
-                    });                                            
-                
-
+                .map(savePizza->{
+                    return new Response(
+                            savePizza.getId(), 
+                            savePizza.getName(), 
+                            savePizza.getDescription(), 
+                            savePizza.getUrl(), 
+                            savePizza.getPrice(), 
+                            generateIngredient(savePizza.getIngredients())
+                    
+                    );
+                });
             });
+                
         }
 
-        public Flux<ResponseIngredient> generateIngredient(Set<Ingredient> ingredients){
-            return Flux.fromIterable(ingredients).map(i->new ResponseIngredient(i.getId(), i.getName()));
+        public Stream<ResponseIngredient> generateIngredient(Set<Ingredient> ingredients){
+
+            return ingredients.stream().map(i->new ResponseIngredient(i.getId(), i.getName()));            
         }
     }
 
