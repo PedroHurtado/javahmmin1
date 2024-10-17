@@ -1,3 +1,5 @@
+https://docs.spring.io/spring-framework/reference/web/webflux-websocket.html
+
 El socket va a recibir la fecha en milisegundos
 desde el inicio de la epoca unix 01/01/1970
 y va a devolver la diferencia entre 
