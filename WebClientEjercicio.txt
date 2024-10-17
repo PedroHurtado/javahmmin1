@@ -1,0 +1,15 @@
+node->instalado
+npm install -g json-server
+json-server db.json
+
+http://localhost:3000
+
+WebClient->8080->3000
+
+Sustituir el código del repositorio de ingredientes
+para que en vez de devolver un Mono<ingredient>
+desde la lista estatica
+lo capturemos desde la llamada al servidor en 
+el puerto 3000 o a esta 
+url
+https://super-chainsaw-vp7g5r67w6hxv5j-3000.app.github.dev/ingredients/{id}
