@@ -26,12 +26,19 @@ public class RepositoryIngredientImpl implements RepositoryIngredient{
     public Mono<Ingredient> get(UUID id) {     
 
        WebClient client = WebClient.create("https://super-chainsaw-vp7g5r67w6hxv5j-3000.app.github.dev");
+       
+
+       //NO HAY CORS
 
        return  client.get()
-		.uri("/ingredients/{id}", id)
-        .accept(MediaType.APPLICATION_JSON)        
+		//REQUEST
+        .uri("/ingredients/{id}", id)
+        .accept(MediaType.APPLICATION_JSON)                 
+        //RESPONSE
 		.retrieve()        
+        //LECTURA ASINCRONA DEL BODY
 		.bodyToMono(Ingredient.class);
+        
 
        /*var result =  ingredients.stream().filter(i->i.getId().equals(id)).findFirst();       
        if(!result.isPresent()) {
