@@ -9,12 +9,17 @@
 
 <body>
     <script>
-        const socket = new WebSocket("http://localhost:3000/ws");
+        //NTP
+        const socket = new WebSocket("http://localhost:8080/ws");
         socket.send(Date.now());
         socket.onmessage = async ({ data }) => {
             console.log(data)
             socket.close()
         }
+
+        const start = Date.now();
+        const end=Date.now()
+        console.log(end-start)
     </script>
 </body>
 
