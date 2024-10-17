@@ -4,3 +4,42 @@ El socket va a recibir la fecha en milisegundos
 desde el inicio de la epoca unix 01/01/1970
 y va a devolver la diferencia entre 
 la fecha del servidor y la fecha actual
+
+
+let socket;
+let reconnectInterval = 5000;  // Intentar reconectar cada 5 segundos
+let maxAttempts = 10;          // Número máximo de intentos de reconexión
+let attempt = 0;
+
+function connect() {
+    socket = new WebSocket('ws://tuservidor.com');
+
+    socket.onopen = function(event) {
+        console.log("Conexión WebSocket establecida");
+        attempt = 0;  // Reiniciar los intentos si se reconecta
+    };
+
+    socket.onmessage = function(event) {
+        console.log("Mensaje recibido: ", event.data);
+    };
+
+    socket.onclose = function(event) {
+        console.log("Conexión cerrada", event);
+        if (attempt < maxAttempts) {
+            setTimeout(() => {
+                attempt++;
+                console.log(`Intentando reconectar (intento ${attempt})`);
+                connect();  // Reintentar conexión
+            }, reconnectInterval);
+        } else {
+            console.log("Número máximo de intentos alcanzado, no se intentará más.");
+        }
+    };
+
+    socket.onerror = function(error) {
+        console.error("Error en WebSocket: ", error);
+        socket.close();
+    };
+}
+
+connect();

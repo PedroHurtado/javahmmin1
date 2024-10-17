@@ -5,9 +5,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.reactive.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.reactive.socket.WebSocketHandler;
+import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.WebSocketSession;
 
-import reactor.core.publisher.Flux;
+//import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
@@ -33,16 +34,16 @@ class WebConfig {
         @SuppressWarnings("null")
         @Override
         public Mono<Void> handle(WebSocketSession session) {
-            Mono<Void> input = session.receive()
-                    .doOnNext(message -> {
-                        // ...
+            return session.receive()
+                    .concatMap(message -> {
+                        Date now = new Date(); // Obtener la fecha actual
+                        String payload = message.getPayloadAsText();
+                        long start = Long.valueOf(payload);
+                        System.out.println("Mensaje recibido: " + payload);                        
+                        WebSocketMessage response = session.textMessage(Long.toString(now.getTime()-start));
+                        return session.send(Mono.just(response));
                     })
-                    .then();
-
-            Flux<String> source = Flux.just("Ok");
-            Mono<Void> output = session.send(source.map(session::textMessage));
-
-            return Mono.zip(input, output).then();
+                    .then(); // Completa cuando no hay más mensajes entrantes
         }
 
     }
