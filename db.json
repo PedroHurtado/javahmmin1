@@ -1,0 +1,7 @@
+{
+    "ingredients": [
+      { "id": "72a33f17-2f6a-440b-b63f-012619963b1e", "name": "tomate", "price": 1.2 },
+      { "id": "de989e8b-93ea-46c3-8b3a-4696b6ab283e", "name": "queso", "price": 2.1 }
+    ]
+   
+  }
